@@ -1,8 +1,10 @@
 # Environments
 .env
-.venv
-env/
+.env.*
+!.env.example
+.venv/
 venv/
+env/
 ENV/
 env.bak/
 venv.bak/
@@ -12,6 +14,16 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local SQLite databases
+*.db
+*.sqlite
+*.sqlite3
 
 # IDEs
 .vscode/

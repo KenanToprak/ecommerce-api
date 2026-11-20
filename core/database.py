@@ -1,20 +1,31 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
+
 from core.config import settings
 
-# Create the database engine
-engine = create_engine(settings.DATABASE_URL)
+is_sqlite = settings.DATABASE_URL.startswith("sqlite")
 
-# SessionLocal class will be used to create database sessions
+engine_kwargs = {}
+if is_sqlite:
+    engine_kwargs["connect_args"] = {"check_same_thread": False}
+else:
+    engine_kwargs["pool_pre_ping"] = True
+
+engine = create_engine(settings.DATABASE_URL, **engine_kwargs)
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Base class for all SQLAlchemy models
-Base = declarative_base()
 
-# Dependency function to get a database session for each request
+class Base(DeclarativeBase):
+    pass
+
+
 def get_db():
     db = SessionLocal()
     try:
         yield db
+    except Exception:
+        db.rollback()
+        raise
     finally:
         db.close()

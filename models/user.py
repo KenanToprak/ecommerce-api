@@ -1,5 +1,8 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy.orm import relationship
+
 from core.database import Base
+
 
 class User(Base):
     __tablename__ = "users"
@@ -8,5 +11,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     full_name = Column(String, index=True)
-    is_active = Column(Boolean, default=True)
-    is_superuser = Column(Boolean, default=False)
+    is_active = Column(Boolean, nullable=False, default=True)
+    is_superuser = Column(Boolean, nullable=False, default=False)
+
+    orders = relationship("Order", back_populates="owner")

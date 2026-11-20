@@ -1,31 +1,35 @@
-from pydantic import BaseModel
-from typing import List
 from datetime import datetime
-from schemas.product import ProductResponse
+from typing import List
+
+from pydantic import BaseModel, ConfigDict, Field
+
+from schemas.product import Money, ProductResponse
+
 
 class OrderItemCreate(BaseModel):
-    product_id: int
-    quantity: int
+    product_id: int = Field(..., gt=0)
+    quantity: int = Field(..., gt=0)
+
 
 class OrderCreate(BaseModel):
-    items: List[OrderItemCreate]
+    items: List[OrderItemCreate] = Field(..., min_length=1)
+
 
 class OrderItemResponse(BaseModel):
     id: int
     product_id: int
     quantity: int
-    unit_price: float
+    unit_price: Money
     product: ProductResponse
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
 
 class OrderResponse(BaseModel):
     id: int
     user_id: int
-    total_price: float
+    total_price: Money
     created_at: datetime
     items: List[OrderItemResponse]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
